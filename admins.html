@@ -1,390 +1,304 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Server Admins</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Server Administrators</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: linear-gradient(135deg, #0a0f1e 0%, #0c1222 100%);
+            font-family: 'Segoe UI', 'Tahoma', 'Verdana', sans-serif;
+            padding: 20px;
+            min-height: 100vh;
+            color: #e0e4f0;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #2a3f6e;
+        }
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            background: linear-gradient(135deg, #fff, #6c8fc7);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            letter-spacing: 1px;
+        }
+        .header p {
+            color: #8e9bbe;
+            font-size: 12px;
+            margin-top: 8px;
+        }
+        .stats-bar {
+            display: flex;
+            justify-content: space-between;
+            background: rgba(20, 30, 50, 0.7);
+            backdrop-filter: blur(4px);
+            padding: 12px 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            border: 1px solid #2a3f6e;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .stat-card {
+            text-align: center;
+            flex: 1;
+            min-width: 80px;
+        }
+        .stat-number {
+            font-size: 28px;
+            font-weight: bold;
+            display: block;
+            line-height: 1.2;
+        }
+        .stat-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #8e9bbe;
+        }
+        .online-stat .stat-number { color: #4ade80; }
+        .offline-stat .stat-number { color: #f87171; }
+        .total-stat .stat-number { color: #60a5fa; }
 
-  <!-- Google Font -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Orbitron:wght@700&display=swap"
-    rel="stylesheet"
-  />
-
-  <style>
-    /* ─── Reset & Base ─────────────────────────────────── */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --bg-dark   : #0a0c10;
-      --bg-panel  : #0e1117;
-      --bg-card   : #131720;
-      --border    : #1e2533;
-      --accent    : #00c9ff;
-      --accent2   : #0057ff;
-      --online    : #00e676;
-      --online-bg : rgba(0, 230, 118, 0.09);
-      --offline   : #ff3d3d;
-      --offline-bg: rgba(255, 61, 61, 0.07);
-      --text-main : #e0e6f0;
-      --text-sub  : #6b7a96;
-      --gold      : #ffd700;
-      --radius    : 12px;
-    }
-
-    html, body {
-      height: 100%;
-      background: var(--bg-dark);
-      color: var(--text-main);
-      font-family: 'Rajdhani', sans-serif;
-      font-size: 15px;
-      line-height: 1.5;
-    }
-
-    /* ─── Layout ────────────────────────────────────────── */
-    .wrapper {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 18px 14px 30px;
-    }
-
-    /* ─── Header ─────────────────────────────────────────── */
-    .header {
-      text-align: center;
-      margin-bottom: 22px;
-      padding-bottom: 16px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .header h1 {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 1.5rem;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .header p {
-      margin-top: 4px;
-      color: var(--text-sub);
-      font-size: 0.85rem;
-      letter-spacing: 1px;
-    }
-
-    /* ─── Stats bar ──────────────────────────────────────── */
-    .stats-bar {
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-    }
-
-    .stat-chip {
-      background: var(--bg-panel);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 5px 16px;
-      font-size: 0.82rem;
-      letter-spacing: 1px;
-      color: var(--text-sub);
-    }
-
-    .stat-chip span {
-      color: var(--accent);
-      font-weight: 700;
-    }
-
-    /* ─── Filter tabs ─────────────────────────────────────── */
-    .filter-tabs {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 16px;
-    }
-
-    .tab-btn {
-      flex: 1;
-      padding: 8px 0;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      background: var(--bg-panel);
-      color: var(--text-sub);
-      font-family: 'Rajdhani', sans-serif;
-      font-size: 0.88rem;
-      font-weight: 600;
-      letter-spacing: 1px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .tab-btn.active,
-    .tab-btn:hover {
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      color: #fff;
-      border-color: transparent;
-    }
-
-    /* ─── Admin Card ──────────────────────────────────────── */
-    .admin-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 14px 16px;
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      transition: border-color 0.2s, transform 0.15s;
-    }
-
-    .admin-card:hover {
-      border-color: var(--accent);
-      transform: translateY(-1px);
-    }
-
-    /* Online card accent */
-    .admin-card.online  { border-left: 3px solid var(--online);  background: var(--online-bg);  }
-    .admin-card.offline { border-left: 3px solid var(--offline); background: var(--offline-bg); }
-
-    /* Status dot */
-    .status-dot {
-      width: 11px;
-      height: 11px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-    .status-dot.online  { background: var(--online);  box-shadow: 0 0 8px var(--online); }
-    .status-dot.offline { background: var(--text-sub); }
-
-    /* Avatar placeholder */
-    .avatar {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--accent2), var(--accent));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.2rem;
-      font-weight: 700;
-      color: #fff;
-      flex-shrink: 0;
-      text-transform: uppercase;
-    }
-
-    /* Info block */
-    .info { flex: 1; min-width: 0; }
-
-    .info-name {
-      font-size: 1.05rem;
-      font-weight: 700;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      color: var(--text-main);
-    }
-
-    .info-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 4px;
-    }
-
-    /* Badge */
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      letter-spacing: 0.5px;
-      padding: 2px 9px;
-      border-radius: 20px;
-      border: 1px solid transparent;
-    }
-
-    .badge.grade   { background: rgba(0,201,255,0.1); border-color: rgba(0,201,255,0.25); color: var(--accent); }
-    .badge.access  { background: rgba(255,215,0,0.08); border-color: rgba(255,215,0,0.25); color: var(--gold); }
-    .badge.online  { background: rgba(0,230,118,0.1);  border-color: rgba(0,230,118,0.3);  color: var(--online); }
-    .badge.offline { background: rgba(107,122,150,0.1);border-color: rgba(107,122,150,0.25);color: var(--text-sub); }
-
-    /* ─── No admins placeholder ──────────────────────────── */
-    .empty-state {
-      text-align: center;
-      padding: 40px 20px;
-      color: var(--text-sub);
-    }
-
-    .empty-state .icon { font-size: 2.5rem; margin-bottom: 10px; }
-    .empty-state p { font-size: 0.9rem; letter-spacing: 1px; }
-
-    /* ─── Footer ─────────────────────────────────────────── */
-    .footer {
-      text-align: center;
-      margin-top: 24px;
-      color: var(--text-sub);
-      font-size: 0.78rem;
-      letter-spacing: 0.5px;
-    }
-
-    /* ─── Scrollbar (Webkit) ─────────────────────────────── */
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: var(--bg-dark); }
-    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-  </style>
+        .admin-table {
+            background: #0f1422;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid #1e2a44;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+        }
+        .admin-header {
+            display: grid;
+            grid-template-columns: 40px 3fr 2fr 1.5fr;
+            background: #1a2338;
+            padding: 12px 16px;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 1px;
+            color: #9eb4e6;
+            border-bottom: 1px solid #2a3f6e;
+        }
+        .admin-row {
+            display: grid;
+            grid-template-columns: 40px 3fr 2fr 1.5fr;
+            padding: 12px 16px;
+            border-bottom: 1px solid #1a2338;
+            transition: background 0.2s;
+            align-items: center;
+        }
+        .admin-row:hover {
+            background: #151e30;
+        }
+        .admin-status {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        .status-online { background: #4ade80; box-shadow: 0 0 6px #4ade80; }
+        .status-offline { background: #6b7280; }
+        .admin-name {
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .admin-flags {
+            background: #2a3f6e;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 9px;
+            font-family: monospace;
+            letter-spacing: 0.5px;
+            color: #bfd6ff;
+        }
+        .admin-grade {
+            color: #ffd966;
+            font-weight: 500;
+        }
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: bold;
+            background: #2e3b4e;
+            color: #ddd;
+        }
+        .footer {
+            text-align: center;
+            font-size: 10px;
+            color: #4a5a7a;
+            margin-top: 20px;
+            padding: 12px;
+            border-top: 1px solid #1e2a44;
+        }
+        @media (max-width: 600px) {
+            .admin-header, .admin-row {
+                grid-template-columns: 30px 2fr 2fr 1fr;
+                gap: 6px;
+                font-size: 11px;
+            }
+            .admin-name { font-size: 12px; }
+            .admin-flags { font-size: 8px; padding: 2px 5px; }
+        }
+        @media (max-width: 480px) {
+            .stats-bar { flex-direction: column; text-align: center; gap: 8px; }
+            .admin-header, .admin-row {
+                grid-template-columns: 1fr;
+                gap: 6px;
+                text-align: center;
+            }
+            .admin-header { display: none; }
+            .admin-row {
+                border-bottom: 1px solid #2a3f6e;
+                padding: 12px;
+            }
+            .admin-name { justify-content: center; }
+        }
+    </style>
 </head>
 <body>
+<div class="container">
+    <div class="header">
+        <h1>⚔️ Server Administration ⚔️</h1>
+        <p>Zombie Plague 6.0 • Live Data</p>
+    </div>
 
-<div class="wrapper">
+    <div class="stats-bar" id="statsBar">
+        <div class="stat-card total-stat"><span class="stat-number" id="totalCount">0</span><span class="stat-label">Total Admins</span></div>
+        <div class="stat-card online-stat"><span class="stat-number" id="onlineCount">0</span><span class="stat-label">Online</span></div>
+        <div class="stat-card offline-stat"><span class="stat-number" id="offlineCount">0</span><span class="stat-label">Offline</span></div>
+    </div>
 
-  <!-- Header -->
-  <div class="header">
-    <h1>⚔ Server Admins</h1>
-    <p id="server-name">Zombie Plague 6.0</p>
-  </div>
-
-  <!-- Stats bar -->
-  <div class="stats-bar">
-    <div class="stat-chip">Total: <span id="stat-total">0</span></div>
-    <div class="stat-chip">🟢 Online: <span id="stat-online">0</span></div>
-    <div class="stat-chip">🔴 Offline: <span id="stat-offline">0</span></div>
-  </div>
-
-  <!-- Filter tabs -->
-  <div class="filter-tabs">
-    <button class="tab-btn active" onclick="filterAdmins('all',  this)">All</button>
-    <button class="tab-btn"        onclick="filterAdmins('online', this)">Online</button>
-    <button class="tab-btn"        onclick="filterAdmins('offline',this)">Offline</button>
-  </div>
-
-  <!-- Admin list -->
-  <div id="admin-list"></div>
-
-  <!-- Footer -->
-  <div class="footer">
-    Data fetched live from the game server &nbsp;·&nbsp; Auto-generated
-  </div>
-
+    <div class="admin-table">
+        <div class="admin-header">
+            <span>#</span>
+            <span>Admin Name</span>
+            <span>Rank / Grade</span>
+            <span>Flags</span>
+        </div>
+        <div id="adminListContainer">
+            <!-- admins will be injected here -->
+            <div style="padding: 40px; text-align: center; color: #6c7a9e;">Loading admin data...</div>
+        </div>
+    </div>
+    <div class="footer">
+        Data fetched live from game server • Auto-generated by ZP60 Admin MOTD
+    </div>
 </div>
 
 <script>
-  // ─── Parse URL query parameters ───────────────────────────
-  const params = new URLSearchParams(window.location.search);
-  const total  = parseInt(params.get('total') || '0', 10);
+    (function() {
+        // Get URL parameters
+        function getQueryParams() {
+            const params = new URLSearchParams(window.location.search);
+            const result = {};
+            for (const [key, value] of params.entries()) {
+                result[key] = value;
+            }
+            return result;
+        }
 
-  // ─── Build admin objects ───────────────────────────────────
-  const admins = [];
+        // Parse the plugin's format: n1, l1, f1, o1, n2, l2, ...
+        function parseAdminsFromURL() {
+            const params = getQueryParams();
+            const total = parseInt(params['total']) || 0;
 
-  for (let i = 1; i <= total; i++) {
-    const name   = decodeURIComponent((params.get(`n${i}`) || 'Unknown').replace(/\+/g, ' '));
-    const grade  = decodeURIComponent((params.get(`l${i}`) || 'N/A').replace(/\+/g, ' '));
-    const flags  = params.get(`f${i}`) || '';
-    const online = params.get(`o${i}`) === '1';
+            if (total === 0) {
+                return [];
+            }
 
-    admins.push({ name, grade, flags, online });
-  }
+            const admins = [];
+            for (let i = 1; i <= total; i++) {
+                const name = params['n' + i] || 'Unknown';
+                const grade = params['l' + i] || 'Player';
+                const flags = params['f' + i] || '';
+                const online = params['o' + i] === '1';
 
-  // ─── Stats ────────────────────────────────────────────────
-  const onlineCount  = admins.filter(a => a.online).length;
-  const offlineCount = admins.length - onlineCount;
+                admins.push({
+                    name: decodeURIComponent(name),
+                    grade: decodeURIComponent(grade),
+                    flags: flags,
+                    online: online,
+                    index: i
+                });
+            }
+            return admins;
+        }
 
-  document.getElementById('stat-total').textContent   = admins.length;
-  document.getElementById('stat-online').textContent  = onlineCount;
-  document.getElementById('stat-offline').textContent = offlineCount;
+        // Render the admin list
+        function renderAdminList() {
+            const admins = parseAdminsFromURL();
 
-  // ─── Render admin cards ───────────────────────────────────
-  function renderAdmins(filter) {
-    const list = document.getElementById('admin-list');
-    list.innerHTML = '';
+            const totalCount = admins.length;
+            const onlineCount = admins.filter(a => a.online).length;
+            const offlineCount = totalCount - onlineCount;
 
-    // Sort: online first, then alphabetically
-    const sorted = [...admins].sort((a, b) => {
-      if (a.online !== b.online) return a.online ? -1 : 1;
-      return a.name.localeCompare(b.name);
-    });
+            // Update stats bar
+            document.getElementById('totalCount').innerText = totalCount;
+            document.getElementById('onlineCount').innerText = onlineCount;
+            document.getElementById('offlineCount').innerText = offlineCount;
 
-    const filtered = sorted.filter(a => {
-      if (filter === 'online')  return  a.online;
-      if (filter === 'offline') return !a.online;
-      return true;
-    });
+            const container = document.getElementById('adminListContainer');
+            if (!container) return;
 
-    if (filtered.length === 0) {
-      list.innerHTML = `
-        <div class="empty-state">
-          <div class="icon">🔍</div>
-          <p>No admins found.</p>
-        </div>`;
-      return;
-    }
+            if (totalCount === 0) {
+                container.innerHTML = '<div style="padding: 40px; text-align: center; color: #ffaa66;">📋 No admins are currently registered in the system.</div>';
+                return;
+            }
 
-    filtered.forEach(admin => {
-      const statusClass = admin.online ? 'online' : 'offline';
-      const statusText  = admin.online ? 'Online'  : 'Offline';
-      const initial     = admin.name.trim()[0] || '?';
+            let html = '';
+            for (let i = 0; i < admins.length; i++) {
+                const admin = admins[i];
+                const statusClass = admin.online ? 'status-online' : 'status-offline';
+                const statusText = admin.online ? 'Online' : 'Offline';
+                const flagsHtml = admin.flags ? `<span class="admin-flags">${escapeHtml(admin.flags)}</span>` : '<span class="admin-flags" style="opacity:0.5;">—</span>';
 
-      // Build a readable flag string (AMXX flags a-z → descriptions)
-      const flagDesc = buildFlagDesc(admin.flags);
+                html += `
+                    <div class="admin-row">
+                        <div class="admin-number">${admin.index}</div>
+                        <div class="admin-name">
+                            <span class="admin-status ${statusClass}"></span>
+                            <span>${escapeHtml(admin.name)}</span>
+                            <span class="badge" style="background: ${admin.online ? '#2a5a3a' : '#3a3a5a'};">${statusText}</span>
+                        </div>
+                        <div class="admin-grade">${escapeHtml(admin.grade)}</div>
+                        <div class="admin-flags-wrapper">${flagsHtml}</div>
+                    </div>
+                `;
+            }
+            container.innerHTML = html;
+        }
 
-      list.innerHTML += `
-        <div class="admin-card ${statusClass}">
-          <div class="status-dot ${statusClass}"></div>
+        // Helper: basic HTML escaping
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
 
-          <div class="avatar">${escHtml(initial)}</div>
-
-          <div class="info">
-            <div class="info-name">${escHtml(admin.name)}</div>
-            <div class="info-row">
-              <span class="badge grade">⭐ ${escHtml(admin.grade)}</span>
-              <span class="badge access">🔑 ${escHtml(flagDesc)}</span>
-              <span class="badge ${statusClass}">${admin.online ? '🟢' : '🔴'} ${statusText}</span>
-            </div>
-          </div>
-        </div>`;
-    });
-  }
-
-  // ─── Filter tab handler ───────────────────────────────────
-  function filterAdmins(type, btn) {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    renderAdmins(type);
-  }
-
-  // ─── Flag → human-readable label ─────────────────────────
-  // AMXX flags: a=kick, b=slay, c=map, d=cvar, e=ban, f=sban,
-  //             g=cheats, h=password, i=rcon, j=vote, k=greet, ...
-  // We group them into short readable labels for display.
-  function buildFlagDesc(flags) {
-    if (!flags || flags === 'none') return 'Guest';
-
-    // Check for common admin power levels
-    const f = flags.toLowerCase();
-    if (f.includes('z'))                      return 'Owner';
-    if ('abcdefghij'.split('').every(c => f.includes(c))) return 'Head Admin';
-    if (f.includes('i') || f.includes('h'))  return 'Admin';
-    if (f.includes('e') || f.includes('f'))  return 'Moderator';
-    if (f.includes('a') || f.includes('b'))  return 'Supporter';
-    return flags.toUpperCase();     // fallback: show raw flags
-  }
-
-  // ─── HTML escape helper ───────────────────────────────────
-  function escHtml(str) {
-    return String(str)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
-  }
-
-  // ─── Initial render ───────────────────────────────────────
-  renderAdmins('all');
+        // Run when page loads
+        window.addEventListener('DOMContentLoaded', renderAdminList);
+    })();
 </script>
-
 </body>
 </html>
