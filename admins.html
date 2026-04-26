@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Server Admins</title>
+
+  <!-- Google Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Orbitron:wght@700&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    /* ─── Reset & Base ─────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-dark   : #0a0c10;
+      --bg-panel  : #0e1117;
+      --bg-card   : #131720;
+      --border    : #1e2533;
+      --accent    : #00c9ff;
+      --accent2   : #0057ff;
+      --online    : #00e676;
+      --online-bg : rgba(0, 230, 118, 0.09);
+      --offline   : #ff3d3d;
+      --offline-bg: rgba(255, 61, 61, 0.07);
+      --text-main : #e0e6f0;
+      --text-sub  : #6b7a96;
+      --gold      : #ffd700;
+      --radius    : 12px;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    /* ─── Layout ────────────────────────────────────────── */
+    .wrapper {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 18px 14px 30px;
+    }
+
+    /* ─── Header ─────────────────────────────────────────── */
+    .header {
+      text-align: center;
+      margin-bottom: 22px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.5rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .header p {
+      margin-top: 4px;
+      color: var(--text-sub);
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+    }
+
+    /* ─── Stats bar ──────────────────────────────────────── */
+    .stats-bar {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .stat-chip {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 5px 16px;
+      font-size: 0.82rem;
+      letter-spacing: 1px;
+      color: var(--text-sub);
+    }
+
+    .stat-chip span {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    /* ─── Filter tabs ─────────────────────────────────────── */
+    .filter-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 8px 0;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg-panel);
+      color: var(--text-sub);
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tab-btn.active,
+    .tab-btn:hover {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+      border-color: transparent;
+    }
+
+    /* ─── Admin Card ──────────────────────────────────────── */
+    .admin-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transition: border-color 0.2s, transform 0.15s;
+    }
+
+    .admin-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-1px);
+    }
+
+    /* Online card accent */
+    .admin-card.online  { border-left: 3px solid var(--online);  background: var(--online-bg);  }
+    .admin-card.offline { border-left: 3px solid var(--offline); background: var(--offline-bg); }
+
+    /* Status dot */
+    .status-dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .status-dot.online  { background: var(--online);  box-shadow: 0 0 8px var(--online); }
+    .status-dot.offline { background: var(--text-sub); }
+
+    /* Avatar placeholder */
+    .avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent2), var(--accent));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+      text-transform: uppercase;
+    }
+
+    /* Info block */
+    .info { flex: 1; min-width: 0; }
+
+    .info-name {
+      font-size: 1.05rem;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: var(--text-main);
+    }
+
+    .info-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    /* Badge */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      padding: 2px 9px;
+      border-radius: 20px;
+      border: 1px solid transparent;
+    }
+
+    .badge.grade   { background: rgba(0,201,255,0.1); border-color: rgba(0,201,255,0.25); color: var(--accent); }
+    .badge.access  { background: rgba(255,215,0,0.08); border-color: rgba(255,215,0,0.25); color: var(--gold); }
+    .badge.online  { background: rgba(0,230,118,0.1);  border-color: rgba(0,230,118,0.3);  color: var(--online); }
+    .badge.offline { background: rgba(107,122,150,0.1);border-color: rgba(107,122,150,0.25);color: var(--text-sub); }
+
+    /* ─── No admins placeholder ──────────────────────────── */
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-sub);
+    }
+
+    .empty-state .icon { font-size: 2.5rem; margin-bottom: 10px; }
+    .empty-state p { font-size: 0.9rem; letter-spacing: 1px; }
+
+    /* ─── Footer ─────────────────────────────────────────── */
+    .footer {
+      text-align: center;
+      margin-top: 24px;
+      color: var(--text-sub);
+      font-size: 0.78rem;
+      letter-spacing: 0.5px;
+    }
+
+    /* ─── Scrollbar (Webkit) ─────────────────────────────── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg-dark); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+<div class="wrapper">
+
+  <!-- Header -->
+  <div class="header">
+    <h1>⚔ Server Admins</h1>
+    <p id="server-name">Zombie Plague 6.0</p>
+  </div>
+
+  <!-- Stats bar -->
+  <div class="stats-bar">
+    <div class="stat-chip">Total: <span id="stat-total">0</span></div>
+    <div class="stat-chip">🟢 Online: <span id="stat-online">0</span></div>
+    <div class="stat-chip">🔴 Offline: <span id="stat-offline">0</span></div>
+  </div>
+
+  <!-- Filter tabs -->
+  <div class="filter-tabs">
+    <button class="tab-btn active" onclick="filterAdmins('all',  this)">All</button>
+    <button class="tab-btn"        onclick="filterAdmins('online', this)">Online</button>
+    <button class="tab-btn"        onclick="filterAdmins('offline',this)">Offline</button>
+  </div>
+
+  <!-- Admin list -->
+  <div id="admin-list"></div>
+
+  <!-- Footer -->
+  <div class="footer">
+    Data fetched live from the game server &nbsp;·&nbsp; Auto-generated
+  </div>
+
+</div>
+
+<script>
+  // ─── Parse URL query parameters ───────────────────────────
+  const params = new URLSearchParams(window.location.search);
+  const total  = parseInt(params.get('total') || '0', 10);
+
+  // ─── Build admin objects ───────────────────────────────────
+  const admins = [];
+
+  for (let i = 1; i <= total; i++) {
+    const name   = decodeURIComponent((params.get(`n${i}`) || 'Unknown').replace(/\+/g, ' '));
+    const grade  = decodeURIComponent((params.get(`l${i}`) || 'N/A').replace(/\+/g, ' '));
+    const flags  = params.get(`f${i}`) || '';
+    const online = params.get(`o${i}`) === '1';
+
+    admins.push({ name, grade, flags, online });
+  }
+
+  // ─── Stats ────────────────────────────────────────────────
+  const onlineCount  = admins.filter(a => a.online).length;
+  const offlineCount = admins.length - onlineCount;
+
+  document.getElementById('stat-total').textContent   = admins.length;
+  document.getElementById('stat-online').textContent  = onlineCount;
+  document.getElementById('stat-offline').textContent = offlineCount;
+
+  // ─── Render admin cards ───────────────────────────────────
+  function renderAdmins(filter) {
+    const list = document.getElementById('admin-list');
+    list.innerHTML = '';
+
+    // Sort: online first, then alphabetically
+    const sorted = [...admins].sort((a, b) => {
+      if (a.online !== b.online) return a.online ? -1 : 1;
+      return a.name.localeCompare(b.name);
+    });
+
+    const filtered = sorted.filter(a => {
+      if (filter === 'online')  return  a.online;
+      if (filter === 'offline') return !a.online;
+      return true;
+    });
+
+    if (filtered.length === 0) {
+      list.innerHTML = `
+        <div class="empty-state">
+          <div class="icon">🔍</div>
+          <p>No admins found.</p>
+        </div>`;
+      return;
+    }
+
+    filtered.forEach(admin => {
+      const statusClass = admin.online ? 'online' : 'offline';
+      const statusText  = admin.online ? 'Online'  : 'Offline';
+      const initial     = admin.name.trim()[0] || '?';
+
+      // Build a readable flag string (AMXX flags a-z → descriptions)
+      const flagDesc = buildFlagDesc(admin.flags);
+
+      list.innerHTML += `
+        <div class="admin-card ${statusClass}">
+          <div class="status-dot ${statusClass}"></div>
+
+          <div class="avatar">${escHtml(initial)}</div>
+
+          <div class="info">
+            <div class="info-name">${escHtml(admin.name)}</div>
+            <div class="info-row">
+              <span class="badge grade">⭐ ${escHtml(admin.grade)}</span>
+              <span class="badge access">🔑 ${escHtml(flagDesc)}</span>
+              <span class="badge ${statusClass}">${admin.online ? '🟢' : '🔴'} ${statusText}</span>
+            </div>
+          </div>
+        </div>`;
+    });
+  }
+
+  // ─── Filter tab handler ───────────────────────────────────
+  function filterAdmins(type, btn) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderAdmins(type);
+  }
+
+  // ─── Flag → human-readable label ─────────────────────────
+  // AMXX flags: a=kick, b=slay, c=map, d=cvar, e=ban, f=sban,
+  //             g=cheats, h=password, i=rcon, j=vote, k=greet, ...
+  // We group them into short readable labels for display.
+  function buildFlagDesc(flags) {
+    if (!flags || flags === 'none') return 'Guest';
+
+    // Check for common admin power levels
+    const f = flags.toLowerCase();
+    if (f.includes('z'))                      return 'Owner';
+    if ('abcdefghij'.split('').every(c => f.includes(c))) return 'Head Admin';
+    if (f.includes('i') || f.includes('h'))  return 'Admin';
+    if (f.includes('e') || f.includes('f'))  return 'Moderator';
+    if (f.includes('a') || f.includes('b'))  return 'Supporter';
+    return flags.toUpperCase();     // fallback: show raw flags
+  }
+
+  // ─── HTML escape helper ───────────────────────────────────
+  function escHtml(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  // ─── Initial render ───────────────────────────────────────
+  renderAdmins('all');
+</script>
+
+</body>
+</html>
