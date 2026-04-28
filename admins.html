@@ -282,9 +282,9 @@
 
   for (let i = 1; i <= total; i++) {
     const name   = decodeURIComponent((params.get(`n${i}`) || 'Unknown').replace(/\+/g, ' '));
-    const grade  = decodeURIComponent((params.get(`l${i}`) || 'N/A').replace(/\+/g, ' '));
     const flags  = params.get(`f${i}`) || '';
     const online = params.get(`o${i}`) === '1';
+    const grade  = buildFlagDesc(flags);   // computed from flags, no DB needed
 
     admins.push({ name, grade, flags, online });
   }
@@ -375,6 +375,8 @@
     if (has('bcdehilr'))              return 'Semi-Elders';
     if (has('bcdehil'))               return 'Moderators';
     if (has('bcdeil'))                return 'Administrators';
+    if (has('bcdeil'))                return 'Helper';
+    if (has('bcdehilx'))              return 'Legend';
     if (has('b'))                     return 'Tag';
     return flags.toUpperCase();
   }
